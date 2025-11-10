@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,21 +56,30 @@ public class CartController {
         return ResponseEntity.ok(mapToCartResponse(cart));
     }
 
-    // Helper method to convert Cart -> CartResponse DTO
+    // Safe helper method to convert Cart -> CartResponse
     private CartResponse mapToCartResponse(Cart cart) {
+        if (cart == null || cart.getItems() == null) {
+            return new CartResponse(null, BigDecimal.ZERO, Collections.emptyList());
+        }
+
         List<CartItemResponse> items = cart.getItems().stream()
-                .map(i -> new CartItemResponse(
-                        i.getId(),
-                        i.getProduct().getId(),
-                        i.getProduct().getName(),
-                        BigDecimal.valueOf(i.getPrice()), // convert double -> BigDecimal safely
-                        i.getQuantity()))
+                .map(this::mapToCartItemResponse)
                 .collect(Collectors.toList());
 
         return new CartResponse(
                 cart.getId(),
                 BigDecimal.valueOf(cart.getTotalPrice()), // convert double -> BigDecimal
                 items
+        );
+    }
+
+    private CartItemResponse mapToCartItemResponse(CartItem item) {
+        return new CartItemResponse(
+                item.getId(),
+                item.getProduct().getId(),
+                item.getProduct().getName(),
+                BigDecimal.valueOf(item.getPrice()), // convert double -> BigDecimal
+                item.getQuantity()
         );
     }
 }
