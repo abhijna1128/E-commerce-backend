@@ -26,12 +26,18 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> orders(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<Order>> getOrders(@AuthenticationPrincipal User user) {
         return ResponseEntity.ok(orderService.getOrdersForUser(user));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> get(@PathVariable Long id) {
+    public ResponseEntity<Order> getOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrderById(id));
+    }
+
+    @GetMapping("/{id}/status")
+    public ResponseEntity<String> getOrderStatus(@PathVariable Long id) {
+        Order order = orderService.getOrderById(id);
+        return ResponseEntity.ok(order.getStatus());
     }
 }

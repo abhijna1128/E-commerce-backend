@@ -1,17 +1,12 @@
 package com.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
-@Builder
 public class Order {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,14 +14,27 @@ public class Order {
     @ManyToOne
     private User user;
 
-    private double totalAmount;
-
-    private LocalDateTime orderDate;
-
-    private String paymentStatus;  // SUCCESS / FAILED
-
-    private String orderStatus;    // PLACED / SHIPPED / DELIVERED / CANCELLED
-
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
+
+    private Double totalPrice;
+
+    private String status; // NEW FIELD: e.g., PENDING, PAID, SHIPPED
+
+    public Order() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public List<OrderItem> getItems() { return items; }
+    public void setItems(List<OrderItem> items) { this.items = items; }
+
+    public Double getTotalPrice() { return totalPrice; }
+    public void setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
 }
